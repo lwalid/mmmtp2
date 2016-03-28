@@ -1,0 +1,124 @@
+package com.example.nounou.tp2;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.Editable;
+import android.view.View;
+import android.text.TextWatcher;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Toast;
+
+import com.example.nounou.tp2.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
+public class Main3Activity extends Activity
+{
+
+
+    private ListView maListViewPerso;
+    private SimpleAdapter mListAdapter;
+    private ArrayList<HashMap<String, String>> listItem;
+
+    EditText inputSearch;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main3);
+        displayContentProvider();
+        inputSearch= (EditText)findViewById(R.id.inputSearch);
+        inputSearch.addTextChangedListener(EditTextWatcher);
+
+        maListViewPerso.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+
+                Intent intent = new Intent(Main3Activity.this, Main2Activity.class);
+;
+                HashMap<String, Object> obj = (HashMap<String, Object>) mListAdapter.getItem(position);
+                String idC=(String) obj.get("id");
+                String name = (String) obj.get("name");
+                String surname = (String) obj.get("surname");
+                String town = (String) obj.get("town");
+                String birth = (String) obj.get("birth");
+                intent.putExtra("id",idC);
+                intent.putExtra("name",name);
+                intent.putExtra("surname",surname);
+                intent.putExtra("town",town);
+                intent.putExtra("birth",birth);
+                startActivity(intent);
+            }
+        });
+    }
+
+
+
+    public void addItem(View v) {
+
+        Intent intent = new Intent(Main3Activity.this,MainActivity.class);
+        startActivity(intent);
+    }
+
+    private TextWatcher EditTextWatcher = new TextWatcher()
+    {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {
+
+            Main3Activity.this.mListAdapter.getFilter().filter(s);
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s)
+        {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                                      int after)
+        {
+        }
+    };
+
+    private void displayContentProvider() {
+
+        listItem = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> map;
+        maListViewPerso = (ListView) findViewById(R.id.listviewperso);
+        Uri uri = MyContentProvider.CONTENT_URI;
+        Cursor c = getContentResolver().query(uri, null, null, null, null);
+
+        mListAdapter = new SimpleAdapter (this.getBaseContext(), listItem, R.layout.listviewitem,
+                new String[] {"img", "name", "surname", "town", "birth"}, new int[] {R.id.img, R.id.name, R.id.surname, R.id.town, R.id.birth});
+        //parcourir le curseur
+        if (c.moveToFirst()) {
+            do {
+
+                map = new HashMap<String, String>();
+                map.put("id", c.getString(c.getColumnIndex(SharedIformation.Customers.Customer_ID)) );
+                map.put("name", c.getString(c.getColumnIndex(SharedIformation.Customers.Customer_NAME)) );
+                map.put("surname", c.getString(c.getColumnIndex(SharedIformation.Customers.Customer_SURNAME)));
+                map.put("town", c.getString(c.getColumnIndex(SharedIformation.Customers.Customer_TOWN)));
+                map.put("birth", c.getString(c.getColumnIndex(SharedIformation.Customers.Customer_DATEOFBORTH)));
+                map.put("img", String.valueOf(R.mipmap.man3));
+
+                listItem.add(map);
+                mListAdapter.notifyDataSetChanged();
+                maListViewPerso.setAdapter(mListAdapter);
+            } while (c.moveToNext());
+        }
+
+    }
+}

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Formulaire</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_raz">Remise à zéro</string>
+    <string name="action_phone">Ajouter  téléphone</string>
+    <string name="action_browser">Naviguer</string>
+    <string name="title_activity_main2">Formulaire 2</string>
+    <string name="title_activity_main3">Liste des personnes</string>
+
+</resources>
